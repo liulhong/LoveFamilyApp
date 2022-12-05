@@ -26,7 +26,7 @@ class MainActivity : BaseActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     //定义静态变量
     companion object {
-        //声明一个静态操作常量字符串
+        //声明一个静态常量字符串
         public val ACTION_SERVICE_NEED : String = "action.ServiceNeed"
     }
     //声明一个内部广播实例
