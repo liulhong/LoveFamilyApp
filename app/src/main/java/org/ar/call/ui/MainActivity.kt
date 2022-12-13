@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import com.kongzue.dialogx.dialogs.MessageDialog
@@ -24,30 +25,39 @@ import org.json.JSONObject
 class MainActivity : BaseActivity() {
 
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
-    //定义静态变量
-    companion object {
-        //声明一个静态常量字符串
-        public val ACTION_SERVICE_NEED : String = "action.ServiceNeed"
-    }
-    //声明一个内部广播实例
-    private lateinit var broadcastReceiver : ServiceNeedBroadcastReceiver
+    private var BackGround = false
+//    //定义静态变量
+//    companion object {
+//        //声明一个静态常量字符串
+//        public val ACTION_SERVICE_NEED : String = "action.ServiceNeed"
+//    }
+//    //声明一个内部广播实例
+//    private lateinit var broadcastReceiver : ServiceNeedBroadcastReceiver
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MainActivityLod", "onCreate: ")
+        Log.d("MyLifeCycle", "onCreate: MainActivity")
         setContentView(binding.root)
         ViewCompat.setTransitionName(binding.ivLogo, "logo")
-//        loginRtm()
-        val intent = Intent(this, OnlineService::class.java)
-        startService(intent) // 启动OnlineService
-        /**
-         * 注册广播实例（在初始化的时候）
-         */
-        val filter = IntentFilter()
-        filter.addAction(ACTION_SERVICE_NEED)
-        broadcastReceiver = ServiceNeedBroadcastReceiver()
-        registerReceiver(broadcastReceiver, filter)
+        loginRtm()
+        BackGround = intent.getBooleanExtra("BackGround", false)
+        if (BackGround) {
+            Log.d("MyLog", "BackGround is True")
+            moveTaskToBack(true)
+        } else {
+            val editor = getSharedPreferences("runStatusData", Context.MODE_PRIVATE).edit()
+            editor.putBoolean("foreground", true)
+            editor.apply()
+        }
+
+//        /**
+//         * 注册广播实例（在初始化的时候）
+//         */
+//        val filter = IntentFilter()
+//        filter.addAction(ACTION_SERVICE_NEED)
+//        broadcastReceiver = ServiceNeedBroadcastReceiver()
+//        registerReceiver(broadcastReceiver, filter)
 
 
         binding.run {
@@ -70,12 +80,27 @@ class MainActivity : BaseActivity() {
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        Log.d("MyLifeCycle", "onStop: MainActivity")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("MyLifeCycle", "onResume: MainActivity")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("MyLifeCycle", "onDestroy: MainActivity")
+    }
+
     private fun loginRtm() {
         lifecycleScope.launchWhenResumed {
-            WaitDialog.show("正在登录...")
+//            WaitDialog.show("正在登录...")
             if (callViewModel.login()) {
 //            if (callViewModel.isLoginSuccess) {
-                showSuccess("登录成功")
+//                showSuccess("登录成功")
+                Log.d("loginRtm", "MainActivity: 登录成功")
             } else {
                 if (BuildConfig.APPID.equals("YOUR APPID")){
                     showError("登录失败，请配置APPID")
@@ -86,17 +111,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    /**
-     * 定义广播接收器，用于执行Service服务的需求（内部类）
-     */
-    inner class ServiceNeedBroadcastReceiver : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            //这里是要在Activity活动里执行的代码
-            loginRtm()
-        }
-
-
-    }
+//    /**
+//     * 定义广播接收器，用于执行Service服务的需求（内部类）
+//     */
+//    inner class ServiceNeedBroadcastReceiver : BroadcastReceiver() {
+//        override fun onReceive(context: Context?, intent: Intent?) {
+//            //这里是要在Activity活动里执行的代码
+//            loginRtm()
+//        }
+//    }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -129,6 +152,7 @@ class MainActivity : BaseActivity() {
 
     override fun onRemoteInvitationReceived(var1: RemoteInvitation?) {
         super.onRemoteInvitationReceived(var1)
+        Log.d("RtmEvents", "MainActivity：onRemoteInvitationReceived: ")
         val isMultiple = JSONObject(var1?.content)["Conference"]
         startActivity(Intent().apply {
             if (isMultiple==1||isMultiple==true){

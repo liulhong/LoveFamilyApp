@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModel
 import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.util.Log
 import android.view.WindowManager
@@ -20,6 +22,7 @@ import io.anyrtc.tanke.utils.Interval
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ar.call.*
+import org.ar.call.service.OnlineService
 import org.ar.call.utils.ScreenUtils
 import org.ar.call.utils.toast
 import org.ar.call.vm.GlobalVM
@@ -33,8 +36,14 @@ import java.util.concurrent.TimeUnit
 
 open class BaseActivity : AppCompatActivity(), RtmEvents {
 
-    protected val callViewModel by lazy { getApplicationScopeViewModel(GlobalVM::class.java) }
+//    companion object {
+    val callViewModel by lazy { getApplicationScopeViewModel(GlobalVM::class.java) }
+    protected open fun <T : ViewModel?> getApplicationScopeViewModel(modelClass: Class<T>): T {
+        return applicationProvider.get(modelClass)
+    }
     private lateinit var applicationProvider: ViewModelProvider
+//    }
+
     private var isReconnect = false
     protected val gson by lazy { Gson() }
     private val interval by lazy { Interval(10, 1, TimeUnit.SECONDS, 1).life(this) }
@@ -58,13 +67,18 @@ open class BaseActivity : AppCompatActivity(), RtmEvents {
 
 
     override fun onDestroy() {
+//        val intent = Intent(this, OnlineService::class.java)
+//        stopService(intent) // 停止Service
+//        val editor = getSharedPreferences("runStatusData", Context.MODE_PRIVATE).edit()
+//        editor.putBoolean("foreground", true)
+//        editor.apply()
+
+        Log.d("MyLifeCycle", "onDestroy: BaseActivity")
         super.onDestroy()
         ScreenUtils.resetScreen(this)
     }
 
-    protected open fun <T : ViewModel?> getApplicationScopeViewModel(modelClass: Class<T>): T {
-        return applicationProvider.get(modelClass)
-    }
+
 
     private fun getAppFactory(activity: Activity): ViewModelProvider.Factory {
         val application = checkApplication(activity)

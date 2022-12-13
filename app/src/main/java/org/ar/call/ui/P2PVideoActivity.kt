@@ -1,12 +1,14 @@
 package org.ar.call.ui
 
 import android.app.PictureInPictureParams
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.util.Rational
 import android.view.TextureView
 import android.view.View
@@ -41,6 +43,7 @@ class P2PVideoActivity : BaseActivity() {
     private var player: MediaPlayer? = null
 
     private var isCalled = false //是否是被呼叫
+    private var isFromOnline = false //如果是后台启动，来自OnlineActivity，则结束通话时，返回到MainActivity
     private var callMode = 0 //通话模式 0视频 1音频
     private var remoteUserId = ""
 
@@ -601,10 +604,17 @@ class P2PVideoActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("MyLifeCycle", "onDestroy: P2PVideoActivity")
         callViewModel.isCalling = false
         callViewModel.callType=-1
         callViewModel.callingUid = ""
         stopRing()
+//        isFromOnline = intent.getBooleanExtra("isFromOnline", false)
+//        if (isFromOnline) {
+//            var intent = Intent(this@P2PVideoActivity, MainActivity::class.java)
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+//            startActivity(intent)
+//        }
     }
 
     override fun onResume() {

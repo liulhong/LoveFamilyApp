@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">视频通话</string>
+    <string name="notification_content">LoveFamily</string>
+    <string name="notification_sub_content">this is foreground service</string>
 </resources>

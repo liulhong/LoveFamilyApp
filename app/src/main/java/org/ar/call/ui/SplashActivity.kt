@@ -1,11 +1,14 @@
 package org.ar.call.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.util.Pair
 import androidx.core.view.ViewCompat
+import androidx.fragment.app.FragmentActivity
 import com.drake.statusbar.immersive
 import com.permissionx.guolindev.PermissionX
 import org.ar.call.R
@@ -23,6 +26,10 @@ class SplashActivity : BaseActivity() {
     private val binding by lazy { ActivitySplashBinding.inflate(layoutInflater) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("MyLifeCycle", "onCreate: SplashActivity")
+        val editor = getSharedPreferences("runStatusData", Context.MODE_PRIVATE).edit()
+        editor.putBoolean("foreground", true)
+        editor.apply()
         setContentView(R.layout.activity_splash)
         PermissionX.init(this).permissions(permissions)
             .onExplainRequestReason { scope, deniedList ->

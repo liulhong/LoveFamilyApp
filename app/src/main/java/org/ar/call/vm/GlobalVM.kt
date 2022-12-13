@@ -2,42 +2,25 @@ package org.ar.call.vm
 
 import android.app.Notification
 import android.app.PendingIntent
-import android.content.Intent
-import androidx.collection.ArraySet
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import org.ar.call.BuildConfig
-import org.ar.call.BuildConfig.APPID
 import org.ar.call.CallApplication
-import org.ar.call.ui.MainActivity
 import org.ar.call.utils.launch
 import org.ar.rtm.*
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import android.app.NotificationManager
 
 
-import android.content.ContentResolver
 import android.net.Uri
 import org.ar.call.R
-import android.media.AudioAttributes
-import android.media.AudioManager
-import android.media.RingtoneManager
-import android.service.carrier.CarrierMessagingService
 import android.util.Log
-import org.ar.call.ui.GroupCallActivity
-import org.ar.call.ui.P2PVideoActivity
-import androidx.core.content.FileProvider
 import io.karn.notify.Notify
-import io.karn.notify.NotifyCreator
-import io.karn.notify.entities.NotifyConfig
 import org.ar.call.utils.NetworkObserver
 import org.ar.call.utils.getAppOpenIntentByPackageName
 import org.ar.call.utils.getPackageContext
-import java.io.File
 
 
 class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
@@ -393,6 +376,7 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
 
         //返回给被叫的回调：收到一条呼叫邀请。SDK 会同时返回一个 RemoteInvitation 对象供被叫管理。
         override fun onRemoteInvitationReceived(var1: RemoteInvitation?) {
+            Log.d("RtmEvents", "GrobalVM：onRemoteInvitationReceived: ")
             if (currentRemoteInvitation == null) {//如果当前没有通话ID 就给它赋值
                 currentRemoteInvitation = var1
             }
