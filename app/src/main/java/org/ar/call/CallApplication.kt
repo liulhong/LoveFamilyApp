@@ -89,6 +89,11 @@ class CallApplication :Application(), ViewModelStoreOwner,Application.ActivityLi
 
             }
 
+            override fun onActivityPostDestroyed(activity: Activity) {
+                super.onActivityPostDestroyed(activity)
+                Log.d("MyLifeCycle", "onActivityPostDestroyed")
+            }
+
         })
     }
 

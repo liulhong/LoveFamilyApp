@@ -64,7 +64,8 @@ class MainActivity : BaseActivity() {
             tvUser.text = "您的呼叫ID:${callViewModel.userId}"
             btnP2p.setOnClickListener {
                 if (callViewModel.isLoginSuccess) {
-                    go(P2PActivity::class.java)
+//                    go(P2PActivity::class.java)
+                    go(P2PCallActivity::class.java)
                 } else {
                     showReLoginDialog()
                 }

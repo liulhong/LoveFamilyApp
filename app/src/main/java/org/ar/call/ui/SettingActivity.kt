@@ -47,6 +47,11 @@ class SettingActivity : BaseActivity() {
             }
         }
         binding.ivBack.setOnClickListener { finish() }
+        binding.addPerson.setOnClickListener {
+            var intent = Intent(this@SettingActivity, EditPersonActivity::class.java)
+            intent.putExtra("isAddPerson", true)
+            startActivity(intent)
+        }
     }
 
     private fun init() {

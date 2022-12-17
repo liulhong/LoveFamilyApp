@@ -26,7 +26,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ARCall">
         <activity
-            android:name=".P2PCallActivity"
+            android:name=".ui.EditPersonActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".ui.P2PCallActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -92,7 +99,7 @@
             android:name=".ui.SplashActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme"></activity>
+            android:theme="@style/SplashTheme" />
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -104,6 +111,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.example.cameraalbumtest.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>
