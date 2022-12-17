@@ -91,6 +91,8 @@ class MainActivity : BaseActivity() {
         Log.d("MyLifeCycle", "onResume: MainActivity")
     }
     override fun onDestroy() {
+        val intent = Intent(this, OnlineService::class.java)
+        stopService(intent) // 停止Service
         super.onDestroy()
         Log.d("MyLifeCycle", "onDestroy: MainActivity")
     }
