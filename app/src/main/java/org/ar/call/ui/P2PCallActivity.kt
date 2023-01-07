@@ -21,6 +21,8 @@ import org.ar.call.ui.adapter.PersonAdapter
 import org.ar.call.utils.Constans
 import org.ar.call.utils.PicFunc
 import org.ar.call.utils.PicFunc.blobToBitmap
+import org.ar.rtm.RemoteInvitation
+import org.json.JSONObject
 
 
 class P2PCallActivity : BaseActivity() {
@@ -85,6 +87,17 @@ class P2PCallActivity : BaseActivity() {
         ivBack.setOnClickListener { finish() }
     }
 
-
+    override fun onRemoteInvitationReceived(var1: RemoteInvitation?) {
+        super.onRemoteInvitationReceived(var1)
+        val isMultiple = JSONObject(var1?.content)["Conference"]
+        startActivity(Intent().apply {
+            if (isMultiple==1||isMultiple==true){
+                setClass(this@P2PCallActivity, GroupCallActivity::class.java)
+            }else{
+                setClass(this@P2PCallActivity, P2PVideoActivity::class.java)
+            }
+            putExtra("isCalled",true)//是否是收到呼叫 no
+        })
+    }
 
 }

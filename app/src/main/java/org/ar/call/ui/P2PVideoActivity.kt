@@ -58,6 +58,7 @@ class P2PVideoActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        binding.root.addView(bindingReceive.root)
         isCalled = intent.getBooleanExtra("isCalled",false)
 
         callViewModel.isWaiting = true
@@ -96,6 +97,8 @@ class P2PVideoActivity : BaseActivity() {
                 bindingReceive.tvState.text=(if (callMode == Constans.AUDIO_MODE) "收到语音呼叫邀请" else "收到视频呼叫邀请")
                 Log.d("printData", "onCreate: callFree = $isCallFree")
                 if (isCallFree) {
+                    // 如果免接听，就不需要来电显示的Activity
+                    binding.root.removeView(bindingReceive.root)
                     callViewModel.accept(it,JSONObject().apply {
                         put("Mode", callMode) //收到的是什么类型就回什么类型
                         put("Conference", false)
@@ -103,7 +106,6 @@ class P2PVideoActivity : BaseActivity() {
                         put("SipData", "")
                     }.toString())
                 } else {
-                    binding.root.addView(bindingReceive.root)
                     showCallLayout()
                 }
 
