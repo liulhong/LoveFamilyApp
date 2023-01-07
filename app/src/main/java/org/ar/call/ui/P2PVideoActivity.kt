@@ -4,6 +4,8 @@ import android.app.PictureInPictureParams
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.database.AbstractWindowedCursor
+import android.database.CursorWindow
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -16,11 +18,13 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ar.call.*
 import org.ar.call.bean.VideoDebugData
+import org.ar.call.database.PersonDatabaseHelper
 import org.ar.call.utils.*
 import org.ar.call.vm.RtcVM
 import org.ar.rtc.RtcEngine
@@ -43,17 +47,19 @@ class P2PVideoActivity : BaseActivity() {
     private var player: MediaPlayer? = null
 
     private var isCalled = false //是否是被呼叫
+    private var isCallFree = false //是否免接听
     private var isFromOnline = false //如果是后台启动，来自OnlineActivity，则结束通话时，返回到MainActivity
     private var callMode = 0 //通话模式 0视频 1音频
     private var remoteUserId = ""
 
     private val videoList = HashMap<String, TextureView?>()
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         isCalled = intent.getBooleanExtra("isCalled",false)
-        binding.root.addView(bindingReceive.root)
+
         callViewModel.isWaiting = true
         if (!isCalled){//如果是主动呼叫
             callViewModel.localInvitation?.let {
@@ -72,9 +78,36 @@ class P2PVideoActivity : BaseActivity() {
                 val contentJSON = JSONObject(it.content)
                 callMode = contentJSON.getInt("Mode")
                 remoteUserId = it.callerId
+                // 根据对方id，查询数据库中对应的callFree属性
+                val db = PersonDatabaseHelper(this@P2PVideoActivity, "personList.db", 2).writableDatabase
+                // 查询Book表中所有的数据
+                val cursor = db.query("Person",null, "callId=?", arrayOf(remoteUserId), null, null, null)
+                val cw = CursorWindow("test2", 50000000)
+                val ac = cursor as AbstractWindowedCursor
+                ac.window = cw
+                if (cursor.moveToFirst()) {
+                    do {
+                        isCallFree = cursor.getInt(cursor.getColumnIndex("callFree")) > 0
+                    } while (cursor.moveToNext())
+                }
+                cursor.close()
+
                 rtcVM.initRTC(this,callMode,contentJSON.getString("ChanId"),callViewModel.userId)
                 bindingReceive.tvState.text=(if (callMode == Constans.AUDIO_MODE) "收到语音呼叫邀请" else "收到视频呼叫邀请")
-                showCallLayout()
+                Log.d("printData", "onCreate: callFree = $isCallFree")
+                if (isCallFree) {
+                    callViewModel.accept(it,JSONObject().apply {
+                        put("Mode", callMode) //收到的是什么类型就回什么类型
+                        put("Conference", false)
+                        put("UserData", "")
+                        put("SipData", "")
+                    }.toString())
+                } else {
+                    binding.root.addView(bindingReceive.root)
+                    showCallLayout()
+                }
+
+
             }?:run {
                 toast("error...")
                 finish()

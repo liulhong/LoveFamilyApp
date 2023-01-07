@@ -59,7 +59,7 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
 
 
 //    val userId = ((Math.random() * 9 + 1) * 1000L).toInt().toString()
-    val userId = "1234"
+    val userId = "5678"
     private var events: RtmEvents? = null
 
 

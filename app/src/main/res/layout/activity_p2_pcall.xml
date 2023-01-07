@@ -33,11 +33,10 @@ tools:context=".ui.P2PActivity">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="联系人列表"
-        android:textSize="15sp"
         android:layout_centerInParent="true"
+        android:text="联系人列表"
         android:textColor="@color/white"
-        android:layout_centerHorizontal="true"></TextView>
+        android:textSize="15sp"></TextView>
 </RelativeLayout>
 
 

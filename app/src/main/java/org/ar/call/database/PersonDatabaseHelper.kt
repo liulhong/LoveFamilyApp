@@ -8,10 +8,12 @@ import android.widget.Toast
 class PersonDatabaseHelper(val context: Context, name: String, version: Int) :
     SQLiteOpenHelper(context, name, null, version) {
     private val createPerson = "create table Person (" +
-            " callId integer primary key autoincrement," +
+            "id integer primary key," +
+            "callId integer," +
             "name text," +
-            "image integer," +
-            "callFree boolean)"
+            "image Blob," +
+            "callFree boolean," +
+            "insertTime text)"
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(createPerson)
         Toast.makeText(context, "Create succeeded", Toast.LENGTH_SHORT).show()

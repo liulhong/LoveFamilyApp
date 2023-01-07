@@ -7,19 +7,20 @@
     android:orientation="vertical"
     android:background="#f1f5f6">
     <RelativeLayout
-        android:id="@+id/rl_top"
+        android:id="@+id/personEdit_top"
         android:layout_width="match_parent"
-        android:layout_marginTop="15dp"
-        android:layout_height="wrap_content">
+        android:layout_height="45dp"
+        android:layout_marginTop="25dp">
         <ImageButton
             android:id="@+id/btn_edit_true"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@drawable/edit_true_nofinish"
-            android:background="@null"
-            android:layout_alignParentRight="true"
             android:padding="12dp"
             android:layout_marginRight="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:src="@drawable/edit_true_nofinish"
             ></ImageButton>
 
 
@@ -27,9 +28,10 @@
             android:id="@+id/btn_edit_false"
             android:layout_width="25dp"
             android:layout_height="25dp"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
             android:background="@null"
             android:padding="12dp"
-            android:layout_marginLeft="20dp"
             android:src="@drawable/edit_false"></ImageButton>
 
         <TextView
@@ -165,13 +167,27 @@
                 android:textColor="#707070"
                 android:layout_toRightOf="@+id/callFreeIcon"
                 android:layout_centerVertical="true"/>
-            <EditText
+<!--            <EditText-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:layout_marginLeft="15dp"-->
+<!--                android:layout_toRightOf="@+id/callFreeText"-->
+<!--                android:background="@null"/>-->
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/personCallFreeEdit"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
+                android:layout_marginTop="11dp"
+                android:layout_centerVertical="true"
+                android:layout_height="47dp"
                 android:layout_toRightOf="@+id/callFreeText"
-                android:background="@null"/>
+                android:background="@color/white"
+                android:textColor="#333333"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"/>
         </RelativeLayout>
+
+
 
     </LinearLayout>
 

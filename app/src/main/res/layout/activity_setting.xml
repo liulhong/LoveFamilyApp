@@ -21,12 +21,12 @@
             android:src="@drawable/back"></ImageView>
 
         <TextView
-            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="设置"
             android:textColor="#333333"
-            android:textSize="18sp"
-            android:text="设置"></TextView>
+            android:textSize="18sp"></TextView>
     </RelativeLayout>
 
     <LinearLayout
