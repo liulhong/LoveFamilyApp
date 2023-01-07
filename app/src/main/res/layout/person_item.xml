@@ -15,6 +15,7 @@
         android:layout_gravity="center_vertical"
         android:background="@drawable/shape_person"
         android:topLeftRadius="4dp"
+        android:scaleType="centerCrop"
         android:topRightRadius="4dp" />
 
     <RelativeLayout
