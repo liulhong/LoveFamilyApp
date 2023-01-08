@@ -67,7 +67,7 @@ class P2PVideoActivity : BaseActivity() {
                 val contentJSON = JSONObject(it.content)
                 callMode = contentJSON.getInt("Mode")
                 remoteUserId = it.calleeId
-                rtcVM.initRTC(this,callMode,contentJSON.getString("ChanId"),callViewModel.userId.value!!)
+                rtcVM.initRTC(this,callMode,contentJSON.getString("ChanId"),callViewModel.userId)
                 showCallLayout()
                 callViewModel.call()
             }?:run {
@@ -94,7 +94,7 @@ class P2PVideoActivity : BaseActivity() {
                 cursor.close()
 
                 rtcVM.initRTC(this,callMode,contentJSON.getString("ChanId"),
-                    callViewModel.userId.value!!
+                    callViewModel.userId
                 )
                 bindingReceive.tvState.text=(if (callMode == Constans.AUDIO_MODE) "收到语音呼叫邀请" else "收到视频呼叫邀请")
                 Log.d("printData", "onCreate: callFree = $isCallFree")

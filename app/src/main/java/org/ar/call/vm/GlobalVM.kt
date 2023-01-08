@@ -33,22 +33,24 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
     var callingUid = ""//p2p正在通话中的人的UID
     var netOnline = true //网络是否连接着
     //    val userId = ((Math.random() * 9 + 1) * 1000L).toInt().toString()
-//    val userId = "1234"
-    val userId: LiveData<String>
-        get() = _userId
-    private val _userId = MutableLiveData<String>()
-    fun setUserId (uId : String) {
-        _userId.value = uId
-    }
-    fun clear() {
-        _userId.value = ""
-    }
+    var userId = ""
+//    val userId: LiveData<String>
+//        get() = _userId
+//    private val _userId = MutableLiveData<String>()
+//    fun setUserId (uId : String) {
+//        _userId.value = uId
+//    }
+//    fun clear() {
+//        _userId.value = ""
+//    }
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         NetworkObserver.invoke(CallApplication.callApp.applicationContext,true,this)
         val prefs = CallApplication.callApp.applicationContext.getSharedPreferences("globalData", Context.MODE_PRIVATE)
-        val userId = prefs.getString("userId", "")
-        _userId.value = userId
+        val userid = prefs.getString("userId", "")
+        if (userid != null) {
+            userId = userid
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -164,22 +166,20 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
                 put("Port",7080)
             }.toString())
         }
-        _userId.value?.let { it1 ->
-            rtmClient.login("", it1, object : ResultCallback<Void> {
-                override fun onSuccess(var1: Void?) {
-                    isLoginSuccess = true
-                    it.resume(true)
-                    rtmCallManager.setEventListener(CallEvent())
-                    Log.d("ARCalllogin", "onSuccess: ")
-                }
+        rtmClient.login("", userId, object : ResultCallback<Void> {
+            override fun onSuccess(var1: Void?) {
+                isLoginSuccess = true
+                it.resume(true)
+                rtmCallManager.setEventListener(CallEvent())
+                Log.d("ARCalllogin", "onSuccess: ")
+            }
 
-                override fun onFailure(var1: ErrorInfo?) {
-                    isLoginSuccess = false
-                    it.resume(false)
-                    Log.d("ARCalllogin", "onFailure: ")
-                }
-            })
-        }
+            override fun onFailure(var1: ErrorInfo?) {
+                isLoginSuccess = false
+                it.resume(false)
+                Log.d("ARCalllogin", "onFailure: ")
+            }
+        })
     }
 
     fun queryOnline(peerId: String, block: (Boolean) -> Unit) {

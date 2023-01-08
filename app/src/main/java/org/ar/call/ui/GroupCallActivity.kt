@@ -54,7 +54,7 @@ class GroupCallActivity : BaseActivity() {
                 }
 
             })
-            tvUser.text="您的呼叫ID:"+callViewModel.userId.value
+            tvUser.text="您的呼叫ID:"+callViewModel.userId
             ivBack.setOnClickListener { finish() }
             btnSetting.setOnClickListener { Intent().apply {
                 setClass(this@GroupCallActivity, SettingActivity::class.java)
@@ -73,7 +73,7 @@ class GroupCallActivity : BaseActivity() {
                         val params = JSONObject()
                         val callArray = JSONArray()
                         val channelId = ((Math.random()*9+1)* 100000000L).toLong().toString()
-                        callArray.put(callViewModel.userId.value)
+                        callArray.put(callViewModel.userId)
                         params.put("Mode", 0)
                         params.put("Conference", true)
                         params.put("ChanId", channelId)
@@ -114,7 +114,7 @@ class GroupCallActivity : BaseActivity() {
         if (isCalled){
             callViewModel.currentRemoteInvitation?.let {
                 val remoteBean = gson.fromJson(it.content, org.ar.call.bean.MultiUserBean::class.java)
-                calledArray = remoteBean.userData.filterNot { it == callViewModel.userId.value } as ArrayList<String>
+                calledArray = remoteBean.userData.filterNot { it == callViewModel.userId } as ArrayList<String>
                 callViewModel.joinRTMChannel(remoteBean.chanId)
                 showWaitingLayout()
             }
@@ -125,7 +125,7 @@ class GroupCallActivity : BaseActivity() {
 
     private fun addTag(){
         binding.run {
-            if (etUser.text.toString() == callViewModel.userId.value){
+            if (etUser.text.toString() == callViewModel.userId){
                 etUser.clearText()
                 showError("不能呼叫自己")
                 return
@@ -214,7 +214,7 @@ class GroupCallActivity : BaseActivity() {
             }else{
                 if(JSONObject(remote?.content)["Conference"]==1 ||JSONObject(remote?.content)["Conference"]==true){
                     val remoteBean = gson.fromJson(remote?.content, org.ar.call.bean.MultiUserBean::class.java)
-                    calledArray = remoteBean.userData.filterNot { it == callViewModel.userId.value } as ArrayList<String>
+                    calledArray = remoteBean.userData.filterNot { it == callViewModel.userId } as ArrayList<String>
                     callViewModel.joinRTMChannel(remoteBean.chanId)
                     showWaitingLayout()
                 }else{

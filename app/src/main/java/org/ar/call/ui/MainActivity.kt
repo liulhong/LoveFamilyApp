@@ -65,7 +65,7 @@ class MainActivity : BaseActivity() {
 
 
         binding.run {
-            tvUser.text = "您的呼叫ID:${callViewModel.userId.value}"
+            tvUser.text = "您的呼叫ID:${callViewModel.userId}"
             btnP2p.setOnClickListener {
                 if (callViewModel.isLoginSuccess) {
 //                    go(P2PActivity::class.java)

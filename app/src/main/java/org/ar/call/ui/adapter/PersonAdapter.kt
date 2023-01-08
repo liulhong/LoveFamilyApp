@@ -58,7 +58,7 @@ class PersonAdapter(private val personList: List<Person>) :
                 return@setOnClickListener
             }
 
-            if (person.callId == viewModel?.userId?.value) {
+            if (person.callId == viewModel?.userId) {
                 TipDialog.show(view.context as AppCompatActivity,"不能呼叫自己", WaitDialog.TYPE.ERROR)
                 return@setOnClickListener
             }
