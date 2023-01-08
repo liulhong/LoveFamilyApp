@@ -63,7 +63,7 @@ class P2PCallActivity : BaseActivity() {
                     // 遍历Cursor对象，取出数据并打印
                     var person : Person = Person()
                     person.id = cursor.getInt(cursor.getColumnIndex("id"))
-                    person.callId = cursor.getInt(cursor.getColumnIndex("callId"))
+                    person.callId = cursor.getString(cursor.getColumnIndex("callId"))
                     person.name = cursor.getString(cursor.getColumnIndex("name"))
                     person.image = blobToBitmap(cursor.getBlob(cursor.getColumnIndex("image")))
                     person.callFree = cursor.getInt(cursor.getColumnIndex("callFree")) > 0

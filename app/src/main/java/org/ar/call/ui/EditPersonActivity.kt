@@ -26,11 +26,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import com.kongzue.dialogx.dialogs.MessageDialog
 import org.ar.call.R
 import org.ar.call.bean.Person
 import org.ar.call.database.PersonDatabaseHelper
 import org.ar.call.databinding.ActivityEditPersonBinding
 import org.ar.call.utils.PicFunc.blobToBitmap
+import org.ar.call.utils.show
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -97,6 +99,7 @@ class EditPersonActivity : BaseActivity() {
                 editFinishedCounter.value = 2
                 btnEditTrue.setImageResource(R.drawable.edit_true_finish)
                 btnEditTrue.isEnabled = true
+                btDeletePerson.show()
 
                 val db = PersonDatabaseHelper(this@EditPersonActivity, "personList.db", 2).writableDatabase
 //                val selectQuery = "SELECT  * FROM Person WHERE name = ?"
@@ -117,7 +120,7 @@ class EditPersonActivity : BaseActivity() {
                 if (cursor.moveToFirst()) {
                     do {
                         person.name = cursor.getString(cursor.getColumnIndex("name"))
-                        person.callId = cursor.getInt(cursor.getColumnIndex("callId"))
+                        person.callId = cursor.getString(cursor.getColumnIndex("callId"))
                         Log.d("printData", "onSearchName: " + person.name)
                         person.image = blobToBitmap(cursor.getBlob(cursor.getColumnIndex("image")))
                         person.callFree = cursor.getInt(cursor.getColumnIndex("callFree")) > 0
@@ -198,7 +201,7 @@ class EditPersonActivity : BaseActivity() {
 
                         if (it.toString() != "") {
                             Log.v("printData", it.toString())
-                            person.callId = Integer.parseInt(it.toString())
+                            person.callId = it.toString()
                         }
                     }
                     var callIdLength = personCallIdEdit.text.length
@@ -223,6 +226,15 @@ class EditPersonActivity : BaseActivity() {
             personCallFreeEdit.setOnCheckedChangeListener { _, isChecked ->
                     person?.callFree = isChecked
 //                    Log.v("printData",isChecked.toString() )
+            }
+            btDeletePerson.setOnClickListener {
+                MessageDialog.show("提示", "确定删除此人吗？", "确定","取消")
+                    .setOkButtonClickListener { _, _ ->
+                        val db = dbHelper.writableDatabase
+                        db.delete("Person", "id=?", arrayOf(person.id.toString()))
+                        finish()
+                        true
+                    }.isCancelable = false
             }
         }
     }

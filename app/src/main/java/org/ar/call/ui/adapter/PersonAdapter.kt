@@ -48,24 +48,24 @@ class PersonAdapter(private val personList: List<Person>) :
         viewHolder.personImage.setOnClickListener {
             val position = viewHolder.adapterPosition
             val person = personList[position]
-            Log.d("personImageClick", "onCreateViewHolder: " + person.callId.toString())
-            if (person.callId.toString().isEmpty()) {
+            Log.d("personImageClick", "onCreateViewHolder: " + person.callId)
+            if (person.callId.isEmpty()) {
                 TipDialog.show(view.context as AppCompatActivity,"请输入需要呼叫的ID", WaitDialog.TYPE.ERROR)
                 return@setOnClickListener
             }
-            if (person.callId.toString().length < 4) {
+            if (person.callId.length < 4) {
                 TipDialog.show(view.context as AppCompatActivity,"请输入4位呼叫ID", WaitDialog.TYPE.ERROR)
                 return@setOnClickListener
             }
 
-            if (person.callId.toString().equals(viewModel?.userId)) {
+            if (person.callId == viewModel?.userId?.value) {
                 TipDialog.show(view.context as AppCompatActivity,"不能呼叫自己", WaitDialog.TYPE.ERROR)
                 return@setOnClickListener
             }
-            viewModel?.queryOnline(person.callId.toString()){
+            viewModel?.queryOnline(person.callId){
                 if (it) {
                     viewModel!!.createLocalInvitation(
-                        person.callId.toString(),
+                        person.callId,
                         0
                     ) {
                         Log.d("printData", "adapter: person.callFree = ${person.callFree}")

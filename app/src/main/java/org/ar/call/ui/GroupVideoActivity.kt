@@ -46,14 +46,14 @@ class GroupVideoActivity : BaseActivity() {
         channelId = intent.getStringExtra("channelId").toString()
         isCalled = intent.getBooleanExtra("isCalled", false)
         callViewModel.joinRTMChannel(channelId)
-        rtcVM.initRTC(this,0,channelId,callViewModel.userId)
+        rtcVM.initRTC(this,0,channelId, callViewModel.userId.value!!)
         rtcVM.joinChannel()
         binding.btnSpeak.isSelected = !binding.btnSpeak.isSelected
         rtcVM.setEnableSpeakerphone(binding.btnSpeak.isSelected)
         binding.run {
             rvVideo.layoutManager = GridLayoutManager(this@GroupVideoActivity,3)
             rvVideo.adapter = memberAdapter
-            memberAdapter.addData(org.ar.call.bean.RtcMember.Factory.create(callViewModel.userId).apply {
+            memberAdapter.addData(org.ar.call.bean.RtcMember.Factory.create(callViewModel.userId.value!!).apply {
                 isWaiting = false
                 isOpenAudio = true
                 isOpenVideo = true
@@ -134,7 +134,7 @@ class GroupVideoActivity : BaseActivity() {
                             callArray?.add(inviteBinding.etUser.text.toString())
                             val params = JSONObject()
                             val arr = JSONArray()
-                            arr.put(callViewModel.userId)
+                            arr.put(callViewModel.userId.value)
                             params.put("Mode", 0)
                             params.put("Conference", true)
                             params.put("ChanId", channelId)

@@ -9,7 +9,7 @@ class PersonDatabaseHelper(val context: Context, name: String, version: Int) :
     SQLiteOpenHelper(context, name, null, version) {
     private val createPerson = "create table Person (" +
             "id integer primary key," +
-            "callId integer," +
+            "callId text," +
             "name text," +
             "image Blob," +
             "callFree boolean," +

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.EditUserIdActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="50dp"
+        android:text="设置呼叫ID："
+        android:textSize="30sp"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="bold"/>
+    <EditText
+        android:id="@+id/etUserId"
+        android:layout_width="280dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="50dp"
+        android:hint="数字，长度不超过11位"
+        android:textCursorDrawable="@drawable/userid_cursor_color"
+
+        android:theme="@style/userIdEditText"/>
+    <Button
+        android:id="@+id/btn_userId"
+        android:layout_width="90dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="50dp"
+        android:text="确定"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:background="@drawable/shape_bt_userid_edit"/>
+
+</LinearLayout>

@@ -1,23 +1,22 @@
 package org.ar.call.ui
 
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
-import androidx.core.content.ContextCompat
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.lifecycleScope
 import com.kongzue.dialogx.dialogs.MessageDialog
-import com.kongzue.dialogx.dialogs.WaitDialog
 import org.ar.call.*
 import org.ar.call.databinding.ActivityMainBinding
 import org.ar.call.service.OnlineService
 import org.ar.call.utils.go
 import org.ar.call.utils.showError
-import org.ar.call.utils.showSuccess
 import org.ar.rtm.RemoteInvitation
 import org.json.JSONObject
 
@@ -37,7 +36,12 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("MyLifeCycle", "onCreate: MainActivity")
+        // 判断呼叫Id是否设置
+        val prefs = getSharedPreferences("globalData", Context.MODE_PRIVATE)
+        val userId = prefs.getString("userId", "")
+        if (userId == "") {
+            go(EditUserIdActivity::class.java)
+        }
         setContentView(binding.root)
         ViewCompat.setTransitionName(binding.ivLogo, "logo")
         loginRtm()
@@ -61,7 +65,7 @@ class MainActivity : BaseActivity() {
 
 
         binding.run {
-            tvUser.text = "您的呼叫ID:${callViewModel.userId}"
+            tvUser.text = "您的呼叫ID:${callViewModel.userId.value}"
             btnP2p.setOnClickListener {
                 if (callViewModel.isLoginSuccess) {
 //                    go(P2PActivity::class.java)
@@ -76,6 +80,13 @@ class MainActivity : BaseActivity() {
                 } else {
                     showReLoginDialog()
                 }
+            }
+            modifyUserId.paint.flags = Paint. UNDERLINE_TEXT_FLAG
+            modifyUserId.setOnClickListener {
+                startActivity(Intent().apply {
+                    setClass(this@MainActivity, EditUserIdActivity::class.java)
+                    putExtra("modify",true)//是否是收到呼叫 no
+                })
             }
         }
 

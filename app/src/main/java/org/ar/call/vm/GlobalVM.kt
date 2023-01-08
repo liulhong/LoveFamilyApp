@@ -2,12 +2,12 @@ package org.ar.call.vm
 
 import android.app.Notification
 import android.app.PendingIntent
+import android.content.Context
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 import org.ar.call.BuildConfig
 import org.ar.call.CallApplication
-import org.ar.call.utils.launch
 import org.ar.rtm.*
 import org.json.JSONObject
 import kotlin.coroutines.resume
@@ -18,9 +18,8 @@ import android.net.Uri
 import org.ar.call.R
 import android.util.Log
 import io.karn.notify.Notify
-import org.ar.call.utils.NetworkObserver
-import org.ar.call.utils.getAppOpenIntentByPackageName
-import org.ar.call.utils.getPackageContext
+import org.ar.call.ui.EditUserIdActivity
+import org.ar.call.utils.*
 
 
 class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
@@ -33,9 +32,23 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
     var callType = -1//呼叫类型
     var callingUid = ""//p2p正在通话中的人的UID
     var netOnline = true //网络是否连接着
+    //    val userId = ((Math.random() * 9 + 1) * 1000L).toInt().toString()
+//    val userId = "1234"
+    val userId: LiveData<String>
+        get() = _userId
+    private val _userId = MutableLiveData<String>()
+    fun setUserId (uId : String) {
+        _userId.value = uId
+    }
+    fun clear() {
+        _userId.value = ""
+    }
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         NetworkObserver.invoke(CallApplication.callApp.applicationContext,true,this)
+        val prefs = CallApplication.callApp.applicationContext.getSharedPreferences("globalData", Context.MODE_PRIVATE)
+        val userId = prefs.getString("userId", "")
+        _userId.value = userId
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
@@ -58,8 +71,8 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
     }
 
 
-//    val userId = ((Math.random() * 9 + 1) * 1000L).toInt().toString()
-    val userId = "1234"
+
+
     private var events: RtmEvents? = null
 
 
@@ -151,20 +164,22 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
                 put("Port",7080)
             }.toString())
         }
-        rtmClient.login("", userId, object : ResultCallback<Void> {
-            override fun onSuccess(var1: Void?) {
-                isLoginSuccess = true
-                it.resume(true)
-                rtmCallManager.setEventListener(CallEvent())
-                Log.d("ARCalllogin", "onSuccess: ")
-            }
+        _userId.value?.let { it1 ->
+            rtmClient.login("", it1, object : ResultCallback<Void> {
+                override fun onSuccess(var1: Void?) {
+                    isLoginSuccess = true
+                    it.resume(true)
+                    rtmCallManager.setEventListener(CallEvent())
+                    Log.d("ARCalllogin", "onSuccess: ")
+                }
 
-            override fun onFailure(var1: ErrorInfo?) {
-                isLoginSuccess = false
-                it.resume(false)
-                Log.d("ARCalllogin", "onFailure: ")
-            }
-        })
+                override fun onFailure(var1: ErrorInfo?) {
+                    isLoginSuccess = false
+                    it.resume(false)
+                    Log.d("ARCalllogin", "onFailure: ")
+                }
+            })
+        }
     }
 
     fun queryOnline(peerId: String, block: (Boolean) -> Unit) {

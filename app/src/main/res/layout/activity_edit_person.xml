@@ -187,6 +187,16 @@
                 android:paddingRight="15dp"/>
         </RelativeLayout>
 
+        <Button
+            android:id="@+id/bt_delete_person"
+            android:layout_width="320dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="140dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:background="@drawable/shape_person_item"
+            android:visibility="gone"
+            android:text="删除联系人"/>
 
 
     </LinearLayout>

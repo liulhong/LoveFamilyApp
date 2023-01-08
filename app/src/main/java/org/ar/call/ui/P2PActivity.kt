@@ -27,7 +27,7 @@ class P2PActivity : BaseActivity() {
 
     fun initView(){
         binding.run {
-            tvUser.text = "您的呼叫ID:${callViewModel.userId}"
+            tvUser.text = "您的呼叫ID:${callViewModel.userId.value}"
             etUser.setTextChangedListener(object : SeparatedEditText.TextChangedListener {
                 override fun textChanged(changeText: CharSequence?) {
                     changeText?.let {
@@ -54,7 +54,7 @@ class P2PActivity : BaseActivity() {
                     showError("请输入4位呼叫ID")
                     return@setOnClickListener
                 }
-                if (etUser.text.toString().equals(callViewModel.userId)) {
+                if (etUser.text.toString().equals(callViewModel.userId.value)) {
                     showError("不能呼叫自己")
                     return@setOnClickListener
                 }
