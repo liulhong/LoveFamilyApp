@@ -59,7 +59,7 @@
                 android:layout_height="80dp"
                 android:layout_gravity="center"
                 android:background="@drawable/shape_person_image"
-                android:scaleType="fitXY"
+                android:scaleType="centerCrop"
                 android:src="@drawable/person_image_default"/>
 
              <TextView
