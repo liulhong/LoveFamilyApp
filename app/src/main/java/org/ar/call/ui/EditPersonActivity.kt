@@ -18,6 +18,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
@@ -33,6 +34,8 @@ import org.ar.call.database.PersonDatabaseHelper
 import org.ar.call.databinding.ActivityEditPersonBinding
 import org.ar.call.utils.PicFunc.blobToBitmap
 import org.ar.call.utils.show
+import org.ar.call.utils.showSuccess
+import org.ar.call.utils.toast
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
@@ -163,8 +166,7 @@ class EditPersonActivity : BaseActivity() {
                 } else {
                     db.update("Person", values, "id = ?", arrayOf(person.id.toString()))
                 }
-
-
+                toast(this@EditPersonActivity, "编辑成功")
                 finish()
             }
             personImageEdit.setOnClickListener {

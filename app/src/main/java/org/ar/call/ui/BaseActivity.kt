@@ -53,11 +53,11 @@ open class BaseActivity : AppCompatActivity(), RtmEvents {
     private var isReceiveResponse = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        ScreenUtils.adapterScreen(this, 375, false)
+//        ScreenUtils.adapterScreen(this, 375, false)
         super.onCreate(savedInstanceState)
         immersive()
         darkMode(false)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         applicationProvider = ViewModelProvider(
             this.applicationContext as org.ar.call.CallApplication,

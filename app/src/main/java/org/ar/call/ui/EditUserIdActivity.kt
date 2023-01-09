@@ -8,6 +8,7 @@ import org.ar.call.databinding.ActivityEditUserIdBinding
 import org.ar.call.utils.go
 import org.ar.call.utils.showError
 import org.ar.call.utils.showSuccess
+import org.ar.call.utils.toast
 import org.ar.rtm.RemoteInvitation
 import org.json.JSONObject
 import java.util.regex.Matcher
@@ -43,7 +44,7 @@ class EditUserIdActivity : BaseActivity() {
                 editor.putString("userId", etUserId.text.toString())
                 editor.apply()
                 callViewModel.userId = etUserId.text.toString()
-                showSuccess("设置成功")
+                toast(this@EditUserIdActivity, "设置成功")
                 go(MainActivity::class.java)
 
             }
