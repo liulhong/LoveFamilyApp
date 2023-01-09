@@ -1,9 +1,5 @@
 package org.ar.call.ui
 
-import android.app.PictureInPictureParams
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.database.AbstractWindowedCursor
 import android.database.CursorWindow
 import android.media.MediaPlayer
@@ -11,10 +7,10 @@ import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
-import android.util.Rational
 import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -23,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.ar.call.*
-import org.ar.call.bean.VideoDebugData
 import org.ar.call.database.PersonDatabaseHelper
 import org.ar.call.utils.*
 import org.ar.call.vm.RtcVM
@@ -34,7 +29,7 @@ import org.ar.rtm.RemoteInvitation
 import org.ar.rtm.RtmMessage
 import org.json.JSONObject
 import org.webrtc.TextureViewRenderer
-import java.util.HashMap
+
 
 class P2PVideoActivity : BaseActivity() {
     private val binding by lazy { org.ar.call.databinding.ActivityP2PvideoBinding.inflate(layoutInflater) }
@@ -57,6 +52,12 @@ class P2PVideoActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED //锁屏状态下显示
+                    or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD //解锁
+                    or WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON //保持屏幕长亮
+                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        ) //打开屏幕
         setContentView(binding.root)
         binding.root.addView(bindingReceive.root)
         isCalled = intent.getBooleanExtra("isCalled",false)
