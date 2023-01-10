@@ -36,13 +36,11 @@ import java.util.concurrent.TimeUnit
 
 open class BaseActivity : AppCompatActivity(), RtmEvents {
 
-//    companion object {
     val callViewModel by lazy { getApplicationScopeViewModel(GlobalVM::class.java) }
     protected open fun <T : ViewModel?> getApplicationScopeViewModel(modelClass: Class<T>): T {
         return applicationProvider.get(modelClass)
     }
     private lateinit var applicationProvider: ViewModelProvider
-//    }
 
     private var isReconnect = false
     protected val gson by lazy { Gson() }
@@ -67,11 +65,6 @@ open class BaseActivity : AppCompatActivity(), RtmEvents {
 
 
     override fun onDestroy() {
-//        val intent = Intent(this, OnlineService::class.java)
-//        stopService(intent) // 停止Service
-//        val editor = getSharedPreferences("runStatusData", Context.MODE_PRIVATE).edit()
-//        editor.putBoolean("foreground", true)
-//        editor.apply()
 
         Log.d("MyLifeCycle", "onDestroy: BaseActivity")
         super.onDestroy()

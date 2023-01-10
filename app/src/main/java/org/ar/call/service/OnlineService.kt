@@ -18,10 +18,7 @@ import org.ar.call.ui.*
 
 class OnlineService : Service() {
 
-//    val rtmdata : RtmData = RtmData()
-//    private var isFromMainActivity = false
     private var ForeGround = false
-//    private var mForegroundNF:ForegroundNF by lazy { ForegroundNF(this) }
     override fun onBind(p0: Intent?): IBinder? {
         TODO("Not yet implemented")
     }
@@ -67,11 +64,7 @@ class OnlineService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Log.d("MyLifeCycle", "onStartCommand: OnlineService")
-//        if (null == intent) {
-//            return START_NOT_STICKY
-//        }
         return START_STICKY
-//        return super.onStartCommand(intent, START_FLAG_REDELIVERY, startId)
     }
 
     override fun onDestroy() {

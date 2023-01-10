@@ -52,19 +52,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".ui.OnlineActivity"
-            android:exported="true"
-            android:theme="@style/AppStartTheme">
-
-            <!-- android:excludeFromRecents="true" -->
-            >
-            <intent-filter>
-                <action android:name="com.online" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <service
             android:name=".service.OnlineService"

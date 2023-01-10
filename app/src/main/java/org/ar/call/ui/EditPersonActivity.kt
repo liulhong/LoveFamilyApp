@@ -105,19 +105,21 @@ class EditPersonActivity : BaseActivity() {
                 btDeletePerson.show()
 
                 val db = PersonDatabaseHelper(this@EditPersonActivity, "personList.db", 2).writableDatabase
-//                val selectQuery = "SELECT  * FROM Person WHERE name = ?"
-//                db.rawQuery(selectQuery, arrayOf(person.name.toString())).use { // .use requires API 16
-//                    if (it.moveToFirst()) {
-//
-//                        person.callId = it.getInt(it.getColumnIndex("callId"))
-//                        Log.d("printData", "onSearchName: " + person.name)
-//                        person.image = blobToBitmap(it.getBlob(it.getColumnIndex("image")))
-//                        person.callFree = it.getInt(it.getColumnIndex("callFree")) > 0
-//                    }
+//                val selectQuery = "SELECT  * FROM Person WHERE id = ?"
+//                db.rawQuery(selectQuery, arrayOf(person.id.toString())).use { // .use requires API 16
+//                    do {
+//                        if (it.moveToFirst()) {
+//                            person.name = it.getString(it.getColumnIndex("name"))
+//                            person.callId = it.getString(it.getColumnIndex("callId"))
+//                            Log.d("printData", "onSearchName: " + person.name)
+//                            person.image = blobToBitmap(it.getBlob(it.getColumnIndex("image")))
+//                            person.callFree = it.getInt(it.getColumnIndex("callFree")) > 0
+//                        }
+//                    } while (it.moveToNext())
 //                }
                 // 查询Book表中所有的数据
                 val cursor = db.query("Person",null, "id=?", arrayOf(person.id.toString()), null, null, null)
-                val cw = CursorWindow("test1", 50000000)
+                val cw = CursorWindow("test1", 30000000)
                 val ac = cursor as AbstractWindowedCursor
                 ac.window = cw
                 if (cursor.moveToFirst()) {
@@ -130,10 +132,11 @@ class EditPersonActivity : BaseActivity() {
                     } while (cursor.moveToNext())
                 }
                 cursor.close()
+
                 Log.d("printData", "onSearchName: " + person.name)
                 personImageEdit.setImageBitmap(person.image)
                 personNameEdit.text = Editable.Factory.getInstance().newEditable(person.name)
-                personCallIdEdit.text = Editable.Factory.getInstance().newEditable(person.callId.toString())
+                personCallIdEdit.text = Editable.Factory.getInstance().newEditable(person.callId)
                 personCallFreeEdit.isChecked = person.callFree
             }
 
@@ -227,7 +230,6 @@ class EditPersonActivity : BaseActivity() {
             })
             personCallFreeEdit.setOnCheckedChangeListener { _, isChecked ->
                     person?.callFree = isChecked
-//                    Log.v("printData",isChecked.toString() )
             }
             btDeletePerson.setOnClickListener {
                 MessageDialog.show("提示", "确定删除此人吗？", "确定","取消")
@@ -292,11 +294,6 @@ class EditPersonActivity : BaseActivity() {
         cropPhotoIntent.setDataAndType(inputUri, "image/*")
         // 授权应用读取 Uri，这一步要有，不然裁剪程序会崩溃
         cropPhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        // 设置图片的最终输出目录
-//        cropPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-//            Uri.parse("file:////sdcard/image_output.jpg").also {
-//                photoOutputUri = it
-//            })
         photoOutputUri = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().path + "/" + "image_output.jpg")
 
         cropPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoOutputUri)
@@ -316,7 +313,7 @@ class EditPersonActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            WRITE_SDCARD_PERMISSION_REQUEST_CODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            WRITE_SDCARD_PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             } else {
                 Toast.makeText(this, "读写内存卡内容权限被拒绝", Toast.LENGTH_SHORT).show()
             }

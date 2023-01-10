@@ -647,18 +647,10 @@ class P2PVideoActivity : BaseActivity() {
         callViewModel.callType=-1
         callViewModel.callingUid = ""
         stopRing()
-//        isFromOnline = intent.getBooleanExtra("isFromOnline", false)
-//        if (isFromOnline) {
-//            var intent = Intent(this@P2PVideoActivity, MainActivity::class.java)
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
-//            startActivity(intent)
-//        }
     }
 
     override fun onResume() {
         super.onResume()
-
-
     }
 
 

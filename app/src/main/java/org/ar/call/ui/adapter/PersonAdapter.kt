@@ -30,7 +30,6 @@ class PersonAdapter(private val personList: List<Person>) :
         // 获取viewModel需要用到这个，必须先在P2PCallActivity的onCreate方法中传过来
         var viewModel: GlobalVM? = null
     }
-//    private lateinit var viewModel: GlobalVM
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val personImage: ImageButton = view.findViewById(R.id.personImage)
@@ -41,9 +40,6 @@ class PersonAdapter(private val personList: List<Person>) :
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.person_item, parent, false)
         val viewHolder = ViewHolder(view)
-        // 获取viewModel
-//        viewModel = ViewModelProvider(viewModelStoreOwner!!).get(GlobalVM::class.java)
-//        viewModel = viewModelStoreOwner?.callViewModel!!
 
         viewHolder.personImage.setOnClickListener {
             val position = viewHolder.adapterPosition

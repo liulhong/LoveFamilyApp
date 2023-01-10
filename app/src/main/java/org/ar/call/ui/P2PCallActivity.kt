@@ -30,8 +30,6 @@ class P2PCallActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_p2_pcall)
-        // 将this传递给Adapter，用于获取viewModel，必须写在adapter创建之前
-//        PersonAdapter.viewModelStoreOwner = this
         PersonAdapter.viewModel = this.callViewModel
         initView()
 

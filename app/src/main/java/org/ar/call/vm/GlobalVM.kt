@@ -38,15 +38,6 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
     var netOnline = true //网络是否连接着
     //    val userId = ((Math.random() * 9 + 1) * 1000L).toInt().toString()
     var userId = ""
-//    val userId: LiveData<String>
-//        get() = _userId
-//    private val _userId = MutableLiveData<String>()
-//    fun setUserId (uId : String) {
-//        _userId.value = uId
-//    }
-//    fun clear() {
-//        _userId.value = ""
-//    }
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         NetworkObserver.invoke(CallApplication.callApp.applicationContext,true,this)
@@ -401,53 +392,13 @@ class GlobalVM : ViewModel(), LifecycleObserver,NetworkObserver.Listener {
             }
             remoteInvitationArray.add(var1!!)
             viewModelScope.launch {
-//                if (isBackground) {//如果是在后台 则不分发这个收到呼叫 因为安卓10或国内一些rom限制后台启动activity
-                    //todo 可以加本地通知
-//                    needReCallBack = true
-//                    val pakContext = getPackageContext(
-//                        CallApplication.callApp.applicationContext,
-//                        BuildConfig.APPLICATION_ID
-//                    )
                 var intent = Intent("P2PVideoCall")
                 intent.addCategory("android.intent.category.DEFAULT")
                 intent.putExtra("isCalled",true)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 CallApplication.callApp.applicationContext.startActivity(intent)
-//                    pakContext?.let {
-//                        it.startActivity(Intent().apply {
-//                            setClass(it, P2PVideoActivity::class.java)
-//                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                            putExtra("isCalled",true)//是否是收到呼叫 no
-//                        })
-//                        val intent = getAppOpenIntentByPackageName(it, BuildConfig.APPLICATION_ID)
-//                        val builder = Notify.with(CallApplication.callApp.applicationContext)
-//                            .alerting("sound") {
-//                                sound =
-//                                    Uri.parse("android.resource://" + BuildConfig.APPLICATION_ID + "/" + R.raw.video_request)
-//                            }
-//                            .meta {
-//                                clickIntent = PendingIntent.getActivity(
-//                                    CallApplication.callApp.applicationContext, 0,
-//                                    intent, 0
-//                                )
-//                                cancelOnClick = true
-//                            }
-//                            .content {
-//                                title = "收到呼叫邀请"
-//                                text = "收到来自${var1.callerId}的呼叫邀请"
-//                            }.asBuilder().setOnlyAlertOnce(false)
-//                        with(NotificationManagerCompat.from(CallApplication.callApp.applicationContext)) {
-//                            notify(1000, builder.build().apply {
-//                                flags = Notification.FLAG_INSISTENT
-//                            })
-//                            isShowNotify = true
-//                        }
 
-                    }
-//                } else {
-//                    events?.onRemoteInvitationReceived(var1)
-//                }
-//            }
+            }
         }
 
         //返回给被叫的回调：接受呼叫邀请成功。
