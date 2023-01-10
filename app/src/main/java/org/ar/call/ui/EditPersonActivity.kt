@@ -1,9 +1,8 @@
 package org.ar.call.ui
 
 import android.Manifest
-import android.R.attr
-import android.app.Activity
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.AbstractWindowedCursor
@@ -15,29 +14,33 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
 import com.kongzue.dialogx.dialogs.MessageDialog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.ar.call.R
 import org.ar.call.bean.Person
 import org.ar.call.database.PersonDatabaseHelper
 import org.ar.call.databinding.ActivityEditPersonBinding
+import org.ar.call.utils.*
 import org.ar.call.utils.PicFunc.blobToBitmap
-import org.ar.call.utils.show
-import org.ar.call.utils.showSuccess
-import org.ar.call.utils.toast
-import java.io.ByteArrayOutputStream
-import java.io.File
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -50,7 +53,7 @@ class EditPersonActivity : BaseActivity() {
     private var isPersonCallIdEdit = false
     private var editFinishedCounter = MutableLiveData<Int>()
     private val fromAlbum = 2
-
+    private var needCrop = false
     private val TAKE_PHOTO_PERMISSION_REQUEST_CODE = 0 // 拍照的权限处理返回码
     private val WRITE_SDCARD_PERMISSION_REQUEST_CODE = 1 // 读储存卡内容的权限处理返回码
     private val TAKE_PHOTO_REQUEST_CODE = 3 // 拍照返回的 requestCode
@@ -63,7 +66,7 @@ class EditPersonActivity : BaseActivity() {
     private lateinit var dbHelper : PersonDatabaseHelper
 
 
-    @RequiresApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -84,7 +87,7 @@ class EditPersonActivity : BaseActivity() {
         Log.d("printData", "onCreateEditPersonActivity: " + person.name)
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun initView() {
         binding.run {
             if (isAddPerson) {
@@ -107,16 +110,6 @@ class EditPersonActivity : BaseActivity() {
                 val db = PersonDatabaseHelper(this@EditPersonActivity, "personList.db", 2).writableDatabase
 //                val selectQuery = "SELECT  * FROM Person WHERE id = ?"
 //                db.rawQuery(selectQuery, arrayOf(person.id.toString())).use { // .use requires API 16
-//                    do {
-//                        if (it.moveToFirst()) {
-//                            person.name = it.getString(it.getColumnIndex("name"))
-//                            person.callId = it.getString(it.getColumnIndex("callId"))
-//                            Log.d("printData", "onSearchName: " + person.name)
-//                            person.image = blobToBitmap(it.getBlob(it.getColumnIndex("image")))
-//                            person.callFree = it.getInt(it.getColumnIndex("callFree")) > 0
-//                        }
-//                    } while (it.moveToNext())
-//                }
                 // 查询Book表中所有的数据
                 val cursor = db.query("Person",null, "id=?", arrayOf(person.id.toString()), null, null, null)
                 val cw = CursorWindow("test1", 30000000)
@@ -172,8 +165,47 @@ class EditPersonActivity : BaseActivity() {
                 toast(this@EditPersonActivity, "编辑成功")
                 finish()
             }
+            // 定义图片选择及裁剪
+            val cropPhoto = registerForActivityResult(CropPhotoContract()) { p: Pair<Uri?, String> ->
+                if (p.first != null) {
+                    personImageEdit.setImageURI(p.first)
+                    var tempFile = File(Environment.getExternalStorageDirectory().toString()
+                            + File.separator + Environment.DIRECTORY_DCIM+File.separator + p.second)
+                    tempFile.delete()
+                    Log.d("printData", "cropPhoto: $tempFile")
+                }
+            }
+            val selectPhoto = registerForActivityResult(SelectPhotoContract()) { uri: Uri? ->
+                if (uri != null) {
+                    if (needCrop) {
+                        Log.d("printData", "initView: $uri")
+                        lifecycleScope.launch {
+                            val googlePrefix =
+                                "content://com.google.android.apps.photos.contentprovider"
+                            val newUri = if (uri.toString().startsWith(googlePrefix, true)) {
+                                // 处理谷歌相册返回的图片
+                                uri
+//                                saveImageToCache(this@EditPersonActivity, uri)
+                            } else uri
+
+                            // 剪裁图片
+                            kotlin.runCatching {
+                                cropPhoto.launch(CropParams(newUri))
+                            }.onFailure {
+                                Log.e("myError", "crop failed: $it" )
+                            }
+                        }
+                    } else {
+                        personImageEdit.setImageURI(uri)
+                    }
+                } else {
+                    toast("您没有选择任何图片")
+                }
+            }
+
             personImageEdit.setOnClickListener {
-                choiceFromAlbum()
+                needCrop = true
+                selectPhoto.launch(null)
             }
             personNameEdit.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -242,64 +274,6 @@ class EditPersonActivity : BaseActivity() {
             }
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // 通过返回码判断是哪个应用返回的数据
-        when (requestCode) {
-            CHOICE_FROM_ALBUM_REQUEST_CODE -> if (data != null) {
-                data.data?.let { cropPhoto(it) }
-            }
-            CROP_PHOTO_REQUEST_CODE -> {
-                val file = photoOutputUri!!.path?.let { File(it) }
-                if (file != null) {
-                    if (file.exists()) {
-                        Log.d("photoProcess", "onActivityResult: select photo success")
-//                        val bitmap = BitmapFactory.decodeFile(photoOutputUri!!.path)
-                        val bitmap = getBitmapFromUri(photoOutputUri!!)
-                        var personImage : ImageButton = findViewById(R.id.personImageEdit)
-                        personImage.setImageBitmap(bitmap)
-                        //                        file.delete(); // 选取完后删除照片
-                    } else {
-                        Toast.makeText(this, "找不到照片", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-        }
-    }
-    private fun getBitmapFromUri(uri: Uri) = contentResolver
-    .openFileDescriptor(uri, "r")?.use {
-        BitmapFactory.decodeFileDescriptor(it.fileDescriptor)
-    }
-
-    /**
-     * 从相册选取
-     */
-    private fun choiceFromAlbum() {
-        // 打开系统图库的 Action，等同于: "android.intent.action.GET_CONTENT"
-        val choiceFromAlbumIntent = Intent(Intent.ACTION_GET_CONTENT)
-        // 设置数据类型为图片类型
-        choiceFromAlbumIntent.type = "image/*"
-        startActivityForResult(choiceFromAlbumIntent, CHOICE_FROM_ALBUM_REQUEST_CODE)
-    }
-
-    /**
-     * 裁剪图片
-     */
-    private fun cropPhoto(inputUri: Uri) {
-        // 调用系统裁剪图片的 Action
-        val cropPhotoIntent = Intent("com.android.camera.action.CROP")
-        // 设置数据Uri 和类型
-        cropPhotoIntent.setDataAndType(inputUri, "image/*")
-        // 授权应用读取 Uri，这一步要有，不然裁剪程序会崩溃
-        cropPhotoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        photoOutputUri = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().path + "/" + "image_output.jpg")
-
-        cropPhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoOutputUri)
-        startActivityForResult(cropPhotoIntent, CROP_PHOTO_REQUEST_CODE)
-    }
-
     /**
      * 在这里进行用户权限授予结果处理
      * @param requestCode 权限要求码，即我们申请权限时传入的常量
